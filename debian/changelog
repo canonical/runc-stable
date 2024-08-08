@@ -1,3 +1,10 @@
+runc-app (1.1.12-0ubuntu4) oracular-proposed; urgency=medium
+
+  * LP: #2076340: No-change rebuild to pick up changed build flags on
+    ppc64el and s390x.
+
+ -- Matthias Klose <doko@ubuntu.com>  Thu, 08 Aug 2024 14:55:51 +0200
+
 runc-app (1.1.12-0ubuntu3) noble; urgency=medium
 
   * Build with Go 1.22.
