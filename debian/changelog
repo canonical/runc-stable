@@ -1,3 +1,9 @@
+runc-app (1.1.12-0ubuntu4~24.04.1) noble; urgency=medium
+
+  * Backport from oracular to noble. (LP: #2040461)
+
+ -- Athos Ribeiro <athos.ribeiro@canonical.com>  Mon, 14 Oct 2024 17:35:50 -0300
+
 runc-app (1.1.12-0ubuntu4) oracular-proposed; urgency=medium
 
   * LP: #2076340: No-change rebuild to pick up changed build flags on
