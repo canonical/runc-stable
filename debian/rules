@@ -10,7 +10,8 @@ VERSION=$(shell dpkg-parsechangelog -SVersion)
 # Build with Golang 1.24
 export PATH := /usr/lib/go-1.24/bin:$(PATH)
 
-export GO111MODULE := off
+# https://go.dev/blog/go116-module-changes
+export GO111MODULE := auto
 export GOCACHE := $(CURDIR)/.cache
 
 %:
