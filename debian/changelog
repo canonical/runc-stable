@@ -1,3 +1,17 @@
+runc-app (1.3.0-0ubuntu1) questing; urgency=medium
+
+  * New upstream version 1.3.0
+  * d/patches: drop patches to cgroups tests. runc now uses
+    opencontainers/cgroups:
+    - d/p/0001-skip-test-hugetlb_test.go.patch
+    - d/p/0004-skip-test-cgroups_test.go.patch
+    - d/p/0006-skip-test-paths_test.go.patch
+    - d/p/0007-skip-test-manager_test.go.patch
+    - d/p/0009-skip-test-file_test.go.patch
+  * d/copyright: update copyright data
+
+ -- Athos Ribeiro <athos.ribeiro@canonical.com>  Tue, 01 Jul 2025 10:50:35 -0300
+
 runc-app (1.2.5-0ubuntu1) plucky; urgency=medium
 
   [ Lucas Kanashiro ]
