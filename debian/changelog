@@ -1,66 +1,8 @@
-runc-app (1.3.0-0ubuntu1) questing; urgency=medium
+runc-stable (1.3.0-0ubuntu1) questing; urgency=medium
 
-  * New upstream version 1.3.0
-  * d/patches: drop patches to cgroups tests. runc now uses
-    opencontainers/cgroups:
-    - d/p/0001-skip-test-hugetlb_test.go.patch
-    - d/p/0004-skip-test-cgroups_test.go.patch
-    - d/p/0006-skip-test-paths_test.go.patch
-    - d/p/0007-skip-test-manager_test.go.patch
-    - d/p/0009-skip-test-file_test.go.patch
-  * d/copyright: update copyright data
+  * Fork from containerd-app (LP: #2120949)
+    - Update package name
+    - Add Conflics, Replaces, and Provides relations with runc
+    - Update package description
 
- -- Athos Ribeiro <athos.ribeiro@canonical.com>  Tue, 01 Jul 2025 10:50:35 -0300
-
-runc-app (1.2.5-0ubuntu1) plucky; urgency=medium
-
-  [ Lucas Kanashiro ]
-  * Do not install example/test utilities (LP: #2076981)
-
-  [ Athos Ribeiro ]
-  * d/gbp.conf: use default value for merging
-  * d/control: build with golang 1.24 (LP: #2098665)
-  * d/rules: add golang 1.24 to PATH
-  * New upstream version 1.2.5
-  * d/p/0002-skip-privileged-test-factory_linux_test.go.patch: refresh patch
-  * d/p/0004-skip-test-cgroups_test.go.patch: refresh patch
-  * d/p/0008-tests-enable-seccomp-default-action-tests-on-arm.patch: drop
-    patch applied upstream
-  * d/p/0010-export-blockIODevice.patch: drop patch applied upstream
-  * d/copyright: update copyright data
-  * d/rules: set GO111MODULE to auto
-
- -- Athos Ribeiro <athos.ribeiro@canonical.com>  Tue, 18 Feb 2025 10:30:11 -0300
-
-runc-app (1.1.12-0ubuntu4) oracular-proposed; urgency=medium
-
-  * LP: #2076340: No-change rebuild to pick up changed build flags on
-    ppc64el and s390x.
-
- -- Matthias Klose <doko@ubuntu.com>  Thu, 08 Aug 2024 14:55:51 +0200
-
-runc-app (1.1.12-0ubuntu3) noble; urgency=medium
-
-  * Build with Go 1.22.
-    - d/control: b-d on golang-1.22-go instead of golang-1.21-go
-    - d/rules: add Go 1.22 to $PATH
-
- -- Lucas Kanashiro <kanashiro@ubuntu.com>  Wed, 17 Apr 2024 16:52:45 -0300
-
-runc-app (1.1.12-0ubuntu2) noble; urgency=high
-
-  * No change rebuild for 64-bit time_t and frame pointers.
-
- -- Julian Andres Klode <juliank@ubuntu.com>  Mon, 08 Apr 2024 18:18:47 +0200
-
-runc-app (1.1.12-0ubuntu1) noble; urgency=medium
-
-  * New upstream release (LP: #2051918).
-
- -- Lucas Kanashiro <kanashiro@ubuntu.com>  Mon, 19 Feb 2024 18:31:43 -0300
-
-runc-app (1.1.10-0ubuntu1) noble; urgency=medium
-
-  * Initial release. See LP #2022390.
-
- -- Lucas Kanashiro <kanashiro@ubuntu.com>  Wed, 13 Dec 2023 14:05:31 -0300
+ -- Athos Ribeiro <athos.ribeiro@canonical.com>  Tue, 26 Aug 2025 14:48:24 -0300

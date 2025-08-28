@@ -35,6 +35,6 @@ override_dh_auto_test:
 override_dh_auto_install:
 	dh_auto_install
 	# Do not ship the library code
-	$(RM) -vrf debian/runc/usr/share/gocode
+	$(RM) -vrf debian/runc-stable/usr/share/gocode
 	# Do not ship example/test utilities (LP: #2076981)
-	$(foreach bin, recvtty sd-helper seccompagent, $(RM) -v debian/runc/usr/bin/$(bin))
+	$(foreach bin, recvtty sd-helper seccompagent, $(RM) -v debian/runc-stable/usr/bin/$(bin))

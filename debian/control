@@ -1,4 +1,4 @@
-Source: runc-app
+Source: runc-stable
 Section: devel
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
@@ -15,11 +15,18 @@ Homepage: https://github.com/opencontainers/runc
 Vcs-Git: https://github.com/canonical/runc-app.git
 Vcs-Browser: https://github.com/canonical/runc-app
 
-Package: runc
+Package: runc-stable
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
+Conflicts: runc
+Replaces: runc
+Provides: runc
 Built-Using: ${misc:Built-Using}
 Description: Open Container Project - runtime
  "runc" is a command line client for running applications packaged according
  to the Open Container Format (OCF) and is a compliant implementation of
  the Open Container Project specification.
+ .
+ This is the stable version of runc in Ubuntu. This package will only receive
+ updates for patch releases and security fixes. If you want to get feature
+ updates, use runc instead.
