@@ -18,8 +18,14 @@ Vcs-Browser: https://github.com/canonical/runc-app
 Package: runc
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
+Conflicts: runc
+Replaces: runc
 Built-Using: ${misc:Built-Using}
 Description: Open Container Project - runtime
  "runc" is a command line client for running applications packaged according
  to the Open Container Format (OCF) and is a compliant implementation of
  the Open Container Project specification.
+ .
+ This package is frequently updated to new runc upstream versions, which may
+ include new features and often introduce breaking changes. If you want
+ stability, use runc-stable instead.
