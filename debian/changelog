@@ -1,6 +1,6 @@
 runc-stable (1.3.0-0ubuntu1) questing; urgency=medium
 
-  * Fork from containerd-app (LP: #2120949)
+  * Fork from runc-app (LP: #2120949)
     - Update package name
     - Add Conflics, Replaces, and Provides relations with runc
     - Update package description
