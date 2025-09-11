@@ -84,7 +84,6 @@ function teardown() {
 	chmod 'a=rwx,ug+s,+t' rootfs/tmp # set all bits
 	mode=$(stat -c %A rootfs/tmp)
 
-	# shellcheck disable=SC2016
 	update_config '.process.args = ["sh", "-c", "stat -c %A /tmp"]'
 	update_config '.mounts += [{"destination": "/tmp", "type": "tmpfs", "source": "tmpfs", "options":["noexec","nosuid","nodev","rprivate"]}]'
 
@@ -94,7 +93,6 @@ function teardown() {
 }
 
 @test "runc run with tmpfs perms" {
-	# shellcheck disable=SC2016
 	update_config '.process.args = ["sh", "-c", "stat -c %a /tmp/test"]'
 	update_config '.mounts += [{"destination": "/tmp/test", "type": "tmpfs", "source": "tmpfs", "options": ["mode=0444"]}]'
 
@@ -113,14 +111,12 @@ function teardown() {
 	# so it should use the directory's perms.
 	update_config '.mounts[-1].options = []'
 	chmod 0710 rootfs/tmp/test
-	# shellcheck disable=SC2016
 	runc run test_tmpfs
 	[ "$status" -eq 0 ]
 	[ "${lines[0]}" = "710" ]
 
 	# Add back the mode on the mount, and it should use that instead.
 	# Just for fun, use different perms than was used earlier.
-	# shellcheck disable=SC2016
 	update_config '.mounts[-1].options = ["mode=0410"]'
 	runc run test_tmpfs
 	[ "$status" -eq 0 ]
@@ -131,10 +127,10 @@ function teardown() {
 	runc --debug run test_hello
 	[ "$status" -eq 0 ]
 	[[ "$output" = *"Hello World"* ]]
-	[[ "$output" = *"runc-dmz: using /proc/self/exe clone"* ]]
+	[[ "$output" = *"runc exeseal: using /proc/self/exe clone"* ]]
 	# runc will use fsopen("overlay") if it can.
 	if can_fsopen overlay; then
-		[[ "$output" = *"runc-dmz: using overlayfs for sealed /proc/self/exe"* ]]
+		[[ "$output" = *"runc exeseal: using overlayfs for sealed /proc/self/exe"* ]]
 	fi
 }
 
@@ -222,4 +218,20 @@ EOF
 	# process, or else we will get a unnecessary error log(#4171).
 	[ ${#lines[@]} -eq 1 ]
 	[[ ${lines[0]} = "exec /run.sh: no such file or directory" ]]
+}
+
+# https://github.com/opencontainers/runc/issues/4688
+@test "runc run check default home" {
+	# cannot start containers as another user in rootless setup without idmap
+	[ $EUID -ne 0 ] && requires rootless_idmap
+	echo 'tempuser:x:2000:2000:tempuser:/home/tempuser:/bin/sh' >>rootfs/etc/passwd
+
+	# shellcheck disable=SC2016
+	update_config '	  .process.cwd = "/root"
+			| .process.user.uid = 2000
+			| .process.args |= ["sh", "-c", "echo $HOME"]'
+
+	runc run test_busybox
+	[ "$status" -eq 0 ]
+	[ "${lines[0]}" = "/home/tempuser" ]
 }
