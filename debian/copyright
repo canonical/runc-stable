@@ -99,6 +99,36 @@ Copyright: 2020 Aleksa Sarai <cyphar@cyphar.com>
            2020 SUSE LLC
 License: Apache-2.0
 
+Files: vendor/github.com/checkpoint-restore/*
+Copyright: 2023, Adrian Reber <areber@redhat.com>
+           2023, Kir Kolyshkin <kolyshkin@gmail.com>
+           2023, Prajwal S N <prajwalnadig21@gmail.com>
+           2023, Radostin Stoyanov <rstoyanov@fedoraproject.org>
+License: Apache-2.0
+
+Files: vendor/github.com/docker/go-units/*
+Copyright: 2015, Docker, Inc
+License: Apache-2.0
+
+Files: vendor/github.com/moby/sys/*
+Copyright: Docker, Inc
+License: Apache-2.0
+
+Files: vendor/github.com/moby/sys/capability/*
+Copyright: 2013, Suryandaru Triandana <syndtr@gmail.com>
+           2023-2024, The Capability Authors
+License: BSD-2-clause
+
+Files: vendor/github.com/mrunalp/fileutils/*
+Copyright: 2014, Docker, Inc
+License: Apache-2.0
+
+Files: vendor/github.com/opencontainers/selinux/*
+Copyright: 2016-2017, Docker, Inc
+           2019-2020, OCI Contributors
+           2004-2006, The Linux Foundation and its contributors
+License: Apache-2.0
+
 License: Apache-2.0
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.

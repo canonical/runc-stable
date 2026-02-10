@@ -512,6 +512,18 @@ func (m *mountEntry) createOpenMountpoint(rootfs string) (Err error) {
 			_ = dstFile.Close()
 		}
 	}()
+	if err == nil && m.Device == "tmpfs" {
+		// If the original target exists, copy the mode for the tmpfs mount.
+		stat, err := dstFile.Stat()
+		if err != nil {
+			return fmt.Errorf("check tmpfs source mode: %w", err)
+		}
+		dt := fmt.Sprintf("mode=%04o", syscallMode(stat.Mode()))
+		if m.Data != "" {
+			dt = dt + "," + m.Data
+		}
+		m.Data = dt
+	}
 	if err != nil {
 		if !errors.Is(err, unix.ENOENT) {
 			return fmt.Errorf("lookup mountpoint target: %w", err)
@@ -531,6 +543,17 @@ func (m *mountEntry) createOpenMountpoint(rootfs string) (Err error) {
 			dstIsFile = !fi.IsDir()
 		}
 
+		// In previous runc versions, we would tolerate nonsense paths with
+		// dangling symlinks as path components. pathrs-lite does not support
+		// this, so instead we have to emulate this behaviour by doing
+		// SecureJoin *purely to get a semi-reasonable path to use* and then we
+		// use pathrs-lite to operate on the path safely.
+		newUnsafePath, err := securejoin.SecureJoin(rootfs, unsafePath)
+		if err != nil {
+			return err
+		}
+		unsafePath = utils.StripRoot(rootfs, newUnsafePath)
+
 		if dstIsFile {
 			dstFile, err = pathrs.CreateInRoot(rootfs, unsafePath, unix.O_CREAT|unix.O_EXCL|unix.O_NOFOLLOW, 0o644)
 		} else {
@@ -539,19 +562,6 @@ func (m *mountEntry) createOpenMountpoint(rootfs string) (Err error) {
 		if err != nil {
 			return fmt.Errorf("make mountpoint %q: %w", m.Destination, err)
 		}
-	}
-
-	if m.Device == "tmpfs" {
-		// If the original target exists, copy the mode for the tmpfs mount.
-		stat, err := dstFile.Stat()
-		if err != nil {
-			return fmt.Errorf("check tmpfs source mode: %w", err)
-		}
-		dt := fmt.Sprintf("mode=%04o", syscallMode(stat.Mode()))
-		if m.Data != "" {
-			dt = dt + "," + m.Data
-		}
-		m.Data = dt
 	}
 
 	dstFullPath, err := procfs.ProcSelfFdReadlink(dstFile)
@@ -578,6 +588,12 @@ func (m *mountEntry) createOpenMountpoint(rootfs string) (Err error) {
 
 func mountToRootfs(c *mountConfig, m mountEntry) error {
 	rootfs := c.root
+	defer func() {
+		if m.dstFile != nil {
+			_ = m.dstFile.Close()
+			m.dstFile = nil
+		}
+	}()
 
 	// procfs and sysfs are special because we need to ensure they are actually
 	// mounted on a specific path in a container without any funny business.
@@ -618,12 +634,6 @@ func mountToRootfs(c *mountConfig, m mountEntry) error {
 	if err := m.createOpenMountpoint(rootfs); err != nil {
 		return fmt.Errorf("create mountpoint for %s mount: %w", m.Destination, err)
 	}
-	defer func() {
-		if m.dstFile != nil {
-			_ = m.dstFile.Close()
-			m.dstFile = nil
-		}
-	}()
 
 	switch m.Device {
 	case "mqueue":
@@ -988,6 +998,8 @@ func createDeviceNode(rootfs string, node *devices.Device, bind bool) error {
 	if err != nil {
 		return fmt.Errorf("mkdir parent of device inode %q: %w", node.Path, err)
 	}
+	defer destDir.Close()
+
 	if bind {
 		return bindMountDeviceNode(destDir, destName, node)
 	}
@@ -1036,10 +1048,10 @@ func mknodDevice(destDir *os.File, destName string, node *devices.Device) error 
 				node.Type, node.Path,
 				stat.Mode&unix.S_IFMT, fileMode&unix.S_IFMT)
 		}
-		if stat.Rdev != dev {
+		if rdev := uint64(stat.Rdev); rdev != dev { //nolint:unconvert // Rdev is uint32 on MIPS.
 			return fmt.Errorf("new %c device inode %s has incorrect major:minor: %d:%d doesn't match expected %d:%d",
 				node.Type, node.Path,
-				unix.Major(stat.Rdev), unix.Minor(stat.Rdev),
+				unix.Major(rdev), unix.Minor(rdev),
 				unix.Major(dev), unix.Minor(dev))
 		}
 		return nil
@@ -1310,7 +1322,8 @@ func remountReadonly(m *configs.Mount) error {
 }
 
 func isDevNull(st *unix.Stat_t) bool {
-	return st.Mode&unix.S_IFMT == unix.S_IFCHR && st.Rdev == unix.Mkdev(1, 3)
+	//nolint:unconvert // Rdev is uint32 on MIPS.
+	return st.Mode&unix.S_IFMT == unix.S_IFCHR && uint64(st.Rdev) == unix.Mkdev(1, 3)
 }
 
 func verifyDevNull(f *os.File) error {
